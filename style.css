@@ -1,0 +1,36 @@
+*{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	box-sizing: border-box;
+}
+
+body{
+	background-color: #999;
+}
+
+p{
+	margin: 10px;
+	font-size: 20px;
+	color: #fff;
+}
+
+.FTitle{
+	/*color: purple;*/
+	background-color: #555;
+	text-align: center;
+	padding: 20px 0;
+}
+.FTitle h1{
+	color: #fff;
+}
+
+.twocol{
+	display: flex;
+}
+
+.pu, .bz, .sumpu, .sumbz, .notbonus, .withbonus{
+	flex: 1 1 50%;
+	text-align: center;
+	border: 3px solid #fff;
+}
