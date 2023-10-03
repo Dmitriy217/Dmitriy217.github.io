@@ -13,10 +13,10 @@ let sumpay = document.querySelector(".sumpu p");
 sumpay.innerHTML = pay.value * 500 + "р - платные услуги";	
 
 let notb = document.querySelector(".notbonus p");
-notb.innerHTML = pay.value * 500 + free.value * 300 + "р - без премии 10к";
+notb.innerHTML = pay.value * 500 + free.value * 320 + "р - без премии 10к";
 
 let wb = document.querySelector(".withbonus p");
-wb.innerHTML = 10000 + pay.value * 500 + free.value * 300 + "р - с премии 10к";
+wb.innerHTML = 10000 + pay.value * 500 + free.value * 320 + "р - с премии 10к";
 
 
 
@@ -26,13 +26,13 @@ wb.innerHTML = 10000 + pay.value * 500 + free.value * 300 + "р - с преми�
 free.onchange = () => {
 
 let sumfree = document.querySelector(".sumbz p");
-sumfree.innerHTML = free.value * 300 + "р - бесплатные замены";	
+sumfree.innerHTML = free.value * 320 + "р - бесплатные замены";	
 
 let notb = document.querySelector(".notbonus p");
-notb.innerHTML = pay.value * 500 + free.value * 300+ "р - без премии 10к";
+notb.innerHTML = pay.value * 500 + free.value * 320 + "р - без премии 10к";
 
 let wb = document.querySelector(".withbonus p");
-wb.innerHTML = 10000 + pay.value * 500 + free.value * 300 + "р - с премии 10к";
+wb.innerHTML = 10000 + pay.value * 500 + free.value * 320 + "р - с премии 10к";
 
 }
 
