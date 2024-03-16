@@ -7,6 +7,8 @@
 
 body{
 	background-image: url("IMG_0236.jpeg");
+	background-repeat: repeat;
+        background-size: cover;
 }
 
 p{
