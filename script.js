@@ -1,48 +1,67 @@
-*{
-	margin: 0;
-	padding: 0;
-	border: 0;
-	box-sizing: border-box;
+window.onload = () => {
+
+
+
+let pay = document.querySelector("#pu");
+let free = document.querySelector("#bz");
+let payM = document.querySelector("#puM");
+let freeM = document.querySelector("#bzM");
+
+
+pay.onchange = () => {
+
+let sumpay = document.querySelector(".sumpu p");
+sumpay.innerHTML = pay.value * 550 + "р - платные услуги";	
+
+let notb = document.querySelector(".notbonus p");
+notb.innerHTML = pay.value * 550 + free.value * 320 + "р - без премии 15к";
+
+let wb = document.querySelector(".withbonus p");
+wb.innerHTML = 15000 + pay.value * 550 + free.value * 320 + "р - с премией 15к";
+
+
+}
+payM.onchange = () => {
+
+
+let sumpayM = document.querySelector(".sumpuM p");
+sumpayM.innerHTML = payM.value * 160 + "р - платные услуги";	
+
+let notbM = document.querySelector(".notbonusM p");
+notbM.innerHTML = payM.value * 160 + freeM.value * 80 + "р - без премии 20к";
+
+let wbM = document.querySelector(".withbonusM p");
+wbM.innerHTML = 20000 + payM.value * 160 + freeM.value * 80 + "р - с премией 20к";
+
+
 }
 
-body{
-	/*background-image: url("IMG_0236.jpeg");
-	background-repeat: repeat;
-	background-size: 50px;*/
-	
-	background-color: slategray;
+
+free.onchange = () => {
+
+let sumfree = document.querySelector(".sumbz p");
+sumfree.innerHTML = free.value * 320 + "р - бесплатные замены";	
+
+let notb = document.querySelector(".notbonus p");
+notb.innerHTML = pay.value * 550 + free.value * 320 + "р - без премии 15к";
+
+let wb = document.querySelector(".withbonus p");
+wb.innerHTML = 15000 + pay.value * 550 + free.value * 320 + "р - с премией 15к";
+
+
+}
+freeM.onchange = () => {
+
+let sumfreeM = document.querySelector(".sumbzM p");
+sumfreeM.innerHTML = freeM.value * 80 + "р - бесплатные замены";	
+
+let notbM = document.querySelector(".notbonusM p");
+notbM.innerHTML = payM.value * 160 + freeM.value * 80 + "р - без премии 20к";
+
+let wbM = document.querySelector(".withbonusM p");
+wbM.innerHTML = 20000 + payM.value * 160 + freeM.value * 80 + "р - с премией 20к";
+
 }
 
-p{
-	margin: 10px;
-	font-size: 20px;
-	color: #fff;
-}
 
-.FTitle{
-	/*color: purple;*/
-	background-color: #512dab;
-	text-align: center;
-	padding: 20px 0;
-}
-.FTitle h1{
-	color: #fff;
-}
-
-.twocol{
-	display: flex;
-}
-
-.pu, .bz, .sumpu, .sumbz, .notbonus, .withbonus, .sumpuM, .sumbzM, .notbonusM, .withbonusM{
-	flex: 1 1 50%;
-	text-align: center;
-	border: 3px solid grey;
-}
-
-#pu, #bz, #puM, #bzM{
-	width: 150px;
-	border-radius: 10px;
-	padding: 3px 5px;
-	margin: 10px 1px;
-	font-size: 15px
 }
