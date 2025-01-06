@@ -28,10 +28,10 @@ let sumpayM = document.querySelector(".sumpuM p");
 sumpayM.innerHTML = payM.value * 160 + "р - платные услуги";	
 
 let notbM = document.querySelector(".notbonusM p");
-notbM.innerHTML = payM.value * 160 + freeM.value * 80 + "р - без премии 20к";
+notbM.innerHTML = payM.value * 160 + freeM.value * 80 + "р - без премии 25к";
 
 let wbM = document.querySelector(".withbonusM p");
-wbM.innerHTML = 20000 + payM.value * 160 + freeM.value * 80 + "р - с премией 20к";
+wbM.innerHTML = 25000 + payM.value * 160 + freeM.value * 80 + "р - с премией 25к";
 
 
 }
@@ -56,10 +56,10 @@ let sumfreeM = document.querySelector(".sumbzM p");
 sumfreeM.innerHTML = freeM.value * 80 + "р - бесплатные замены";	
 
 let notbM = document.querySelector(".notbonusM p");
-notbM.innerHTML = payM.value * 160 + freeM.value * 80 + "р - без премии 20к";
+notbM.innerHTML = payM.value * 160 + freeM.value * 80 + "р - без премии 25к";
 
 let wbM = document.querySelector(".withbonusM p");
-wbM.innerHTML = 20000 + payM.value * 160 + freeM.value * 80 + "р - с премией 20к";
+wbM.innerHTML = 25000 + payM.value * 160 + freeM.value * 80 + "р - с премией 25к";
 
 }
 
