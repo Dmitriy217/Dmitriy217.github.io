@@ -1,40 +1,48 @@
-window.onload = () => {
-
-
-
-let pay = document.querySelector("#pu");
-let free = document.querySelector("#bz");
-
-
-
-pay.onchange = () => {
-
-let sumpay = document.querySelector(".sumpu p");
-sumpay.innerHTML = pay.value * 550 + "р - платные услуги";	
-
-let notb = document.querySelector(".notbonus p");
-notb.innerHTML = pay.value * 550 + free.value * 320 + "р - без премии 15к";
-
-let wb = document.querySelector(".withbonus p");
-wb.innerHTML = 15000 + pay.value * 550 + free.value * 320 + "р - с премией 15к";
-
-
-
+*{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	box-sizing: border-box;
 }
 
-
-free.onchange = () => {
-
-let sumfree = document.querySelector(".sumbz p");
-sumfree.innerHTML = free.value * 320 + "р - бесплатные замены";	
-
-let notb = document.querySelector(".notbonus p");
-notb.innerHTML = pay.value * 550 + free.value * 320 + "р - без премии 15к";
-
-let wb = document.querySelector(".withbonus p");
-wb.innerHTML = 15000 + pay.value * 550 + free.value * 320 + "р - с премией 15к";
-
+body{
+	/*background-image: url("IMG_0236.jpeg");
+	background-repeat: repeat;
+	background-size: 50px;*/
+	
+	background-color: slategray;
 }
 
+p{
+	margin: 10px;
+	font-size: 20px;
+	color: #fff;
+}
 
+.FTitle{
+	/*color: purple;*/
+	background-color: #512dab;
+	text-align: center;
+	padding: 20px 0;
+}
+.FTitle h1{
+	color: #fff;
+}
+
+.twocol{
+	display: flex;
+}
+
+.pu, .bz, .sumpu, .sumbz, .notbonus, .withbonus, .sumpuM, .sumbzM, .notbonusM, .withbonusM{
+	flex: 1 1 50%;
+	text-align: center;
+	border: 3px solid grey;
+}
+
+#pu, #bz, #puM, #bzM{
+	width: 150px;
+	border-radius: 10px;
+	padding: 3px 5px;
+	margin: 10px 1px;
+	font-size: 15px
 }
