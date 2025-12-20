@@ -2,176 +2,337 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расчёт зарплаты автослесаря</title>
-    <!-- Подключаем Google Fonts для красивого шрифта -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>3D Игра — Сбор кубов (Мобильная v2)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            overflow: hidden; 
+            background: #000; 
+            touch-action: none; 
+            font-family: Arial, sans-serif; 
         }
-
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        canvas { display: block; width: 100%; height: 100%; }
+        #score {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 28px;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        #ui {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            height: 160px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .joystick {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 4px solid rgba(255,255,255,0.3);
+            transition: opacity 0.2s;
+            pointer-events: auto;
+        }
+        #moveJoy { bottom: 30px; left: 30px; }
+        #lookJoy { bottom: 30px; right: 30px; }
+        .knob {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        #jumpBtn {
+            position: absolute;
+            bottom: 200px;
+            right: 40px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4facfe, #00f2fe);
+            border: 4px solid rgba(255,255,255,0.8);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,150,255,0.4);
+            pointer-events: auto;
+            user-select: none;
+            transition: all 0.1s;
         }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 40px;
+        #jumpBtn:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 12px rgba(0,150,255,0.6);
+        }
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 550px;
-            backdrop-filter: blur(10px);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #444;
-            font-weight: 500;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            background: #87ceeb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        #result {
-            margin-top: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-radius: 12px;
-            text-align: center;
             font-size: 24px;
-            font-weight: 700;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
         }
-
-        #result.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .info {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-        }
-
-        .card {
-            border-radius: 12px;
-            overflow: hidden;
-        }
+        #loading.hidden { display: none; }
     </style>
 </head>
 <body>
-    <div class="container card">
-        <h1>Расчёт зарплаты автослесаря</h1>
-        
-        <form id="salaryForm">
-            <div class="form-group">
-                <label for="paidHours">Часы платных услуг (× 550 ₽)</label>
-                <input type="number" id="paidHours" min="0" step="0.5" placeholder="0" required>
-            </div>
-
-            <div class="form-group">
-                <label for="freeHours">Часы бесплатных замен (× 320 ₽)</label>
-                <input type="number" id="freeHours" min="0" step="0.5" placeholder="0" required>
-            </div>
-
-            <div class="form-group">
-                <label for="extraShifts">Дополнительные смены (× 1500 ₽)</label>
-                <input type="number" id="extraShifts" min="0" step="1" value="0" required>
-            </div>
-
-            <button type="button" class="btn" onclick="calculateSalary()">Рассчитать зарплату</button>
-        </form>
-
-        <div id="result"></div>
-
-        <div class="info">
-            Оклад 20 000 ₽ + оплата по часам + доп. смены
+    <div id="loading">
+        <div>Загрузка 3D игры...</div>
+        <div style="margin-top: 20px; font-size: 16px;">Подождите 3 секунды</div>
+    </div>
+    <div id="score">Счёт: 0</div>
+    <div id="ui">
+        <div id="moveJoy" class="joystick">
+            <div class="knob" id="moveKnob"></div>
         </div>
+        <div id="lookJoy" class="joystick">
+            <div class="knob" id="lookKnob"></div>
+        </div>
+        <div id="jumpBtn">↑</div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
     <script>
-        function calculateSalary() {
-            const paidHours = parseFloat(document.getElementById('paidHours').value) || 0;
-            const freeHours = parseFloat(document.getElementById('freeHours').value) || 0;
-            const extraShifts = parseFloat(document.getElementById('extraShifts').value) || 0;
+        // Глобальные переменные
+        let camera, scene, renderer;
+        let moveVector = new THREE.Vector2(0, 0);
+        let lookVector = new THREE.Vector2(0, 0);
+        let velocity = new THREE.Vector3();
+        let canJump = false;
+        let score = 0;
+        const collectibles = [];
+        let isLoaded = false;
 
-            const paidAmount = paidHours * 550;
-            const freeAmount = freeHours * 320;
-            const extraAmount = extraShifts * 1500;
-            const baseSalary = 20000;
+        // Инициализация
+        async function init() {
+            try {
+                // Сцена
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x87ceeb);
+                scene.fog = new THREE.Fog(0x87ceeb, 0, 500);
 
-            const totalSalary = paidAmount + freeAmount + extraAmount + baseSalary;
+                // Камера
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(0, 10, 0);
 
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `
-                <div>Итоговая зарплата</div>
-                <div style="font-size: 32px; margin-top: 10px;">${totalSalary.toLocaleString('ru-RU')} ₽</div>
-            `;
-            resultDiv.classList.add('show');
+                // Рендерер
+                renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    alpha: true,
+                    powerPreference: "high-performance"
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                document.body.appendChild(renderer.domElement);
+
+                // Освещение
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                scene.add(ambientLight);
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(50, 100, 50);
+                directionalLight.castShadow = true;
+                scene.add(directionalLight);
+
+                // Пол
+                const floorGeometry = new THREE.PlaneGeometry(200, 200);
+                const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+                const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+                floor.rotation.x = -Math.PI / 2;
+                floor.receiveShadow = true;
+                scene.add(floor);
+
+                // Кубы
+                for (let i = 0; i < 20; i++) { // Больше кубов
+                    const cubeGeo = new THREE.BoxGeometry(3, 3, 3);
+                    const cubeMat = new THREE.MeshStandardMaterial({ 
+                        color: 0xffff00,
+                        emissive: 0x444400
+                    });
+                    const cube = new THREE.Mesh(cubeGeo, cubeMat);
+                    cube.position.x = (Math.random() - 0.5) * 180;
+                    cube.position.z = (Math.random() - 0.5) * 180;
+                    cube.position.y = 1.5;
+                    cube.castShadow = true;
+                    scene.add(cube);
+                    collectibles.push(cube);
+                }
+
+                // UI контролы
+                setupControls();
+
+                // События
+                window.addEventListener('resize', onWindowResize);
+                window.addEventListener('orientationchange', onWindowResize);
+
+                // Запуск после загрузки
+                setTimeout(() => {
+                    document.getElementById('loading').classList.add('hidden');
+                    isLoaded = true;
+                }, 2000);
+
+                console.log('Игра загружена успешно!');
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+                alert('Ошибка загрузки игры. Проверьте консоль (F12).');
+            }
         }
+
+        function setupControls() {
+            // Джойстик движения
+            const moveJoy = document.getElementById('moveJoy');
+            const moveKnob = document.getElementById('moveKnob');
+            let moveTouchId = null;
+
+            function updateMoveKnob(dx, dy) {
+                const maxDist = 40;
+                const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
+                const angle = Math.atan2(dy, dx);
+                moveKnob.style.transform = `translate(-50%, -50%) translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+                moveVector.set(dx / maxDist, dy / maxDist);
+            }
+
+            ['touchstart', 'touchmove', 'touchend'].forEach(event => {
+                moveJoy.addEventListener(event, (e) => {
+                    e.preventDefault();
+                    if (e.touches.length === 1 || (moveTouchId && e.changedTouches[0].identifier === moveTouchId)) {
+                        const touch = e.touches[0] || e.changedTouches[0];
+                        const rect = moveJoy.getBoundingClientRect();
+                        const dx = (touch.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+                        const dy = (touch.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+                        if (event === 'touchstart') moveTouchId = touch.identifier;
+                        if (event === 'touchend') {
+                            moveTouchId = null;
+                            updateMoveKnob(0, 0);
+                        } else {
+                            updateMoveKnob(dx, dy);
+                        }
+                    }
+                });
+            });
+
+            // Джойстик взгляда
+            const lookJoy = document.getElementById('lookJoy');
+            const lookKnob = document.getElementById('lookKnob');
+            let lookTouchId = null;
+
+            function updateLookKnob(dx, dy) {
+                const maxDist = 40;
+                const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
+                const angle = Math.atan2(dy, dx);
+                lookKnob.style.transform = `translate(-50%, -50%) translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+                lookVector.set(dx / maxDist * 2, dy / maxDist * 2); // Чувствительность
+            }
+
+            ['touchstart', 'touchmove', 'touchend'].forEach(event => {
+                lookJoy.addEventListener(event, (e) => {
+                    e.preventDefault();
+                    if (e.touches.length === 1 || (lookTouchId && e.changedTouches[0].identifier === lookTouchId)) {
+                        const touch = e.touches[0] || e.changedTouches[0];
+                        const rect = lookJoy.getBoundingClientRect();
+                        const dx = (touch.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+                        const dy = (touch.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+                        if (event === 'touchstart') lookTouchId = touch.identifier;
+                        if (event === 'touchend') {
+                            lookTouchId = null;
+                            updateLookKnob(0, 0);
+                        } else {
+                            updateLookKnob(dx, dy);
+                        }
+                    }
+                });
+            });
+
+            // Прыжок
+            document.getElementById('jumpBtn').addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (canJump) {
+                    velocity.y = 20;
+                    canJump = false;
+                }
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (!isLoaded) return;
+
+            const delta = 0.016; // ~60 FPS
+
+            // Движение
+            velocity.x *= 0.85;
+            velocity.z *= 0.85;
+            velocity.y -= 30 * delta; // Гравитация
+
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+            const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+
+            const moveSpeed = 200 * delta;
+            velocity.add(forward.multiplyScalar(-moveVector.y * moveSpeed));
+            velocity.add(right.multiplyScalar(moveVector.x * moveSpeed));
+
+            camera.position.add(velocity.clone().multiplyScalar(delta));
+
+            // Ограничение по полу
+            if (camera.position.y < 10) {
+                camera.position.y = 10;
+                velocity.y = 0;
+                canJump = true;
+            }
+
+            // Взгляд
+            camera.rotation.y -= lookVector.x * 0.05;
+            camera.rotation.x -= lookVector.y * 0.05;
+            camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+
+            // Сбор кубов
+            collectibles.forEach(cube => {
+                if (cube.visible && camera.position.distanceTo(cube.position) < 5) {
+                    cube.visible = false;
+                    score++;
+                    document.getElementById('score').textContent = `Счёт: ${score}`;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Запуск
+        init();
+        animate();
     </script>
 </body>
 </html>
