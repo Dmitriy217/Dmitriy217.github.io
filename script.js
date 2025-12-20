@@ -1,3 +1,5 @@
+window.onload = () => {
+
 let camera, scene, renderer, canvas;
 let moveVector = new THREE.Vector2(0,0);
 let lookVector = new THREE.Vector2(0,0);
@@ -160,4 +162,6 @@ function animate() {
     });
 
     renderer.render(scene, camera);
+}
+
 }
