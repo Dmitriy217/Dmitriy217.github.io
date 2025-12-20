@@ -2,18 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>3D Игра — Сбор кубов (iOS фикс)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>3D Игра — Сбор кубов (iOS)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             overflow: hidden; 
             background: #000; 
-            touch-action: manipulation; /* Лучше для touch */
-            cursor: pointer; /* Фикс для touch events в Safari */
+            touch-action: manipulation;
+            cursor: pointer !important; /* КРИТИЧЕСКИ ВАЖНО для Safari iOS */
             font-family: Arial, sans-serif; 
         }
-        canvas { display: block; width: 100%; height: 100%; }
+        canvas { display: block; width: 100vw; height: 100vh; }
         #score {
             position: fixed;
             top: 20px;
@@ -23,27 +23,18 @@
             font-size: 28px;
             z-index: 100;
             background: rgba(0,0,0,0.7);
-            padding: 15px 25px;
+            padding: 15px 30px;
             border-radius: 15px;
         }
-        #ui {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            height: 160px;
-            pointer-events: none;
-            z-index: 50;
-        }
         .joystick {
-            position: absolute;
+            position: fixed;
             width: 140px;
             height: 140px;
             border-radius: 50%;
             background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
             border: 4px solid rgba(255,255,255,0.3);
             pointer-events: auto;
+            z-index: 50;
         }
         #moveJoy { bottom: 30px; left: 30px; }
         #lookJoy { bottom: 30px; right: 30px; }
@@ -51,35 +42,33 @@
             position: absolute;
             width: 60px;
             height: 60px;
+            background: rgba(255,255,255,0.5);
             border-radius: 50%;
-            background: rgba(255,255,255,0.4);
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         #jumpBtn {
-            position: absolute;
+            position: fixed;
             bottom: 200px;
             right: 40px;
             width: 90px;
             height: 90px;
-            border-radius: 50%;
             background: linear-gradient(145deg, #4facfe, #00f2fe);
-            border: 4px solid rgba(255,255,255,0.8);
+            border: 4px solid white;
+            border-radius: 50%;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(0,150,255,0.4);
+            z-index: 50;
             pointer-events: auto;
-            user-select: none;
         }
         #startScreen {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            inset: 0;
             background: #87ceeb;
             display: flex;
             flex-direction: column;
@@ -87,105 +76,119 @@
             justify-content: center;
             z-index: 200;
             color: white;
-            font-size: 24px;
-            text-align: center;
         }
         #startScreen button {
-            margin-top: 40px;
-            padding: 20px 40px;
-            font-size: 24px;
+            margin-top: 50px;
+            padding: 20px 50px;
+            font-size: 28px;
             background: #00f2fe;
             border: none;
             border-radius: 20px;
             color: white;
         }
-        #error {
+        #errorScreen {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            inset: 0;
+            background: rgba(0,0,0,0.9);
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 300;
             color: white;
-            font-size: 20px;
+            font-size: 22px;
             text-align: center;
+            padding: 20px;
+        }
+        #errorScreen button {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 20px;
+            background: #ff4444;
+            border: none;
+            border-radius: 15px;
         }
     </style>
 </head>
 <body>
     <div id="startScreen">
         <h1>3D Игра: Сбор кубов</h1>
-        <p>Коснитесь кнопки, чтобы начать</p>
+        <p>Нажмите кнопку, чтобы начать</p>
         <button id="startBtn">СТАРТ</button>
     </div>
 
-    <div id="error">
+    <div id="errorScreen">
         <h2>Ошибка WebGL</h2>
-        <p>Контекст потерян. Перезагрузите страницу.</p>
+        <p>Не удалось запустить 3D. Перезагрузите страницу или попробуйте позже.</p>
+        <button onclick="location.reload()">Перезагрузить</button>
     </div>
 
     <div id="score">Счёт: 0</div>
-    <div id="ui">
-        <div id="moveJoy" class="joystick"><div class="knob" id="moveKnob"></div></div>
-        <div id="lookJoy" class="joystick"><div class="knob" id="lookKnob"></div></div>
-        <div id="jumpBtn">↑</div>
-    </div>
+
+    <div id="moveJoy" class="joystick"><div id="moveKnob" class="knob"></div></div>
+    <div id="lookJoy" class="joystick"><div id="lookKnob" class="knob"></div></div>
+    <div id="jumpBtn">↑ ПРЫЖОК</div>
 
     <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
     <script>
-        let camera, scene, renderer;
-        let moveVector = new THREE.Vector2(0, 0);
-        let lookVector = new THREE.Vector2(0, 0);
-        let velocity = new THREE.Vector3();
-        let canJump = false;
+        let camera, scene, renderer, canvas;
+        let moveVector = new THREE.Vector2(0,0);
+        let lookVector = new THREE.Vector2(0,0);
+        let velocity = new THREE.Vector3(0,0,0);
+        let canJump = true;
         let score = 0;
         const collectibles = [];
-        let started = false;
 
         const startScreen = document.getElementById('startScreen');
-        const errorDiv = document.getElementById('error');
+        const errorScreen = document.getElementById('errorScreen');
 
-        document.getElementById('startBtn').addEventListener('touchstart', startGame);
-        document.getElementById('startBtn').addEventListener('click', startGame); // на случай десктопа
+        document.getElementById('startBtn').addEventListener('touchstart', startGame, { passive: false });
+        document.getElementById('startBtn').addEventListener('click', startGame);
 
         function startGame(e) {
-            e.preventDefault();
-            if (started) return;
-            started = true;
+            if (e) e.preventDefault();
             startScreen.style.display = 'none';
-            init();
-            animate();
-        }
 
-        function init() {
+            // Создаём renderer только после касания
+            renderer = new THREE.WebGLRenderer({
+                antialias: false,     // Отключаем для стабильности на iOS
+                alpha: false,         // Важно для избежания чёрного экрана
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.body.appendChild(renderer.domElement);
+            canvas = renderer.domElement;
+
+            // Проверка поддержки WebGL
+            if (!renderer.getContext()) {
+                errorScreen.style.display = 'flex';
+                return;
+            }
+
+            // Обработка context lost (частая проблема на iOS)
+            canvas.addEventListener('webglcontextlost', (e) => {
+                e.preventDefault();
+                errorScreen.style.display = 'flex';
+            });
+
+            // Инициализация сцены
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87ceeb);
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 10, 0);
+            camera.position.y = 10;
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            document.body.appendChild(renderer.domElement);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambient);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(50, 100, 50);
+            scene.add(dirLight);
 
-            // Обработка context lost
-            renderer.domElement.addEventListener('webglcontextlost', (e) => {
-                e.preventDefault();
-                errorDiv.style.display = 'flex';
-            });
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(50, 100, 50);
-            scene.add(directionalLight);
-
-            const floorGeometry = new THREE.PlaneGeometry(200, 200);
-            const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            const floor = new THREE.Mesh(
+                new THREE.PlaneGeometry(200, 200),
+                new THREE.MeshStandardMaterial({ color: 0x228b22 })
+            );
             floor.rotation.x = -Math.PI / 2;
             scene.add(floor);
 
@@ -194,62 +197,70 @@
                     new THREE.BoxGeometry(3, 3, 3),
                     new THREE.MeshStandardMaterial({ color: 0xffff00 })
                 );
-                cube.position.x = (Math.random() - 0.5) * 180;
-                cube.position.z = (Math.random() - 0.5) * 180;
+                cube.position.x = Math.random() * 180 - 90;
+                cube.position.z = Math.random() * 180 - 90;
                 cube.position.y = 1.5;
                 scene.add(cube);
                 collectibles.push(cube);
             }
 
             setupControls();
-
-            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('resize', onResize);
+            animate();
         }
 
-        // Тот же код джойстиков и прыжка, что и раньше (оставляю без изменений для краткости)
         function setupControls() {
-            // ... (тот же код из предыдущей версии для moveJoy, lookJoy, jumpBtn)
+            // Джойстик движения
             const moveJoy = document.getElementById('moveJoy');
             const moveKnob = document.getElementById('moveKnob');
-            let moveTouchId = null;
+            let moveActive = false;
 
-            function updateMoveKnob(dx, dy) {
-                const maxDist = 40;
-                const dist = Math.hypot(dx, dy);
-                const limited = dist > maxDist ? maxDist / dist : 1;
-                moveKnob.style.transform = `translate(-50%, -50%) translate(${dx * limited}px, ${dy * limited}px)`;
-                moveVector.set(dx / maxDist, dy / maxDist);
+            moveJoy.addEventListener('touchstart', (e) => { e.preventDefault(); moveActive = true; handleMove(e.touches[0]); });
+            moveJoy.addEventListener('touchmove', (e) => { e.preventDefault(); if (moveActive) handleMove(e.touches[0]); });
+            moveJoy.addEventListener('touchend', () => { moveActive = false; resetKnob(moveKnob, moveVector); });
+
+            function handleMove(touch) {
+                const rect = moveJoy.getBoundingClientRect();
+                const dx = (touch.clientX - rect.left - 70);
+                const dy = (touch.clientY - rect.top - 70);
+                const dist = Math.min(Math.hypot(dx, dy), 50);
+                const angle = Math.atan2(dy, dx);
+                moveKnob.style.transform = `translate(-50%, -50%) translate(${dist * Math.cos(angle)}px, ${dist * Math.sin(angle)}px)`;
+                moveVector.set(dx / 50, dy / 50);
             }
 
-            moveJoy.addEventListener('touchstart', handleTouch);
-            moveJoy.addEventListener('touchmove', handleTouch);
-            moveJoy.addEventListener('touchend', () => { moveTouchId = null; updateMoveKnob(0,0); });
+            // Джойстик взгляда (аналогично)
+            const lookJoy = document.getElementById('lookJoy');
+            const lookKnob = document.getElementById('lookKnob');
+            let lookActive = false;
 
-            function handleTouch(e) {
-                e.preventDefault();
-                for (let touch of e.touches) {
-                    if (moveTouchId === null || touch.identifier === moveTouchId) {
-                        moveTouchId = touch.identifier;
-                        const rect = moveJoy.getBoundingClientRect();
-                        const dx = (touch.clientX - rect.left - rect.width/2);
-                        const dy = (touch.clientY - rect.top - rect.height/2);
-                        updateMoveKnob(dx, dy);
-                        break;
-                    }
-                }
+            lookJoy.addEventListener('touchstart', (e) => { e.preventDefault(); lookActive = true; handleLook(e.touches[0]); });
+            lookJoy.addEventListener('touchmove', (e) => { e.preventDefault(); if (lookActive) handleLook(e.touches[0]); });
+            lookJoy.addEventListener('touchend', () => { lookActive = false; resetKnob(lookKnob, lookVector); });
+
+            function handleLook(touch) {
+                const rect = lookJoy.getBoundingClientRect();
+                const dx = (touch.clientX - rect.left - 70);
+                const dy = (touch.clientY - rect.top - 70);
+                const dist = Math.min(Math.hypot(dx, dy), 50);
+                const angle = Math.atan2(dy, dx);
+                lookKnob.style.transform = `translate(-50%, -50%) translate(${dist * Math.cos(angle)}px, ${dist * Math.sin(angle)}px)`;
+                lookVector.set(dx / 50 * 2, dy / 50 * 2);
             }
-
-            // Аналогично для lookJoy (смотри предыдущий код)
-            // ... (вставь код для lookJoy и jumpBtn из прошлой версии)
 
             // Прыжок
             document.getElementById('jumpBtn').addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (canJump) { velocity.y = 20; canJump = false; }
+                if (canJump) { velocity.y = 18; canJump = false; }
             });
         }
 
-        function onWindowResize() {
+        function resetKnob(knob, vec) {
+            knob.style.transform = 'translate(-50%, -50%)';
+            vec.set(0,0);
+        }
+
+        function onResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -258,20 +269,17 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            const delta = 0.016;
+            velocity.x *= 0.9;
+            velocity.z *= 0.9;
+            velocity.y -= 0.5; // гравитация
 
-            velocity.x *= 0.85;
-            velocity.z *= 0.85;
-            velocity.y -= 30 * delta;
+            const forward = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+            const right = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
 
-            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-            const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+            velocity.add(forward.multiplyScalar(moveVector.y * 0.8));
+            velocity.add(right.multiplyScalar(moveVector.x * 0.8));
 
-            const moveSpeed = 200 * delta;
-            velocity.add(forward.multiplyScalar(-moveVector.y * moveSpeed));
-            velocity.add(right.multiplyScalar(moveVector.x * moveSpeed));
-
-            camera.position.add(velocity.clone().multiplyScalar(delta));
+            camera.position.add(velocity);
 
             if (camera.position.y < 10) {
                 camera.position.y = 10;
@@ -279,15 +287,16 @@
                 canJump = true;
             }
 
-            camera.rotation.y -= lookVector.x * 0.05;
-            camera.rotation.x -= lookVector.y * 0.05;
-            camera.rotation.x = Math.clamp(camera.rotation.x, -Math.PI/2, Math.PI/2);
+            camera.rotation.y -= lookVector.x * 0.01;
+            camera.rotation.x -= lookVector.y * 0.01;
+            camera.rotation.x = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, camera.rotation.x));
 
-            collectibles.forEach(cube => {
-                if (cube.visible && camera.position.distanceTo(cube.position) < 5) {
-                    cube.visible = false;
+            // Сбор кубов
+            collectibles.forEach(c => {
+                if (c.visible && camera.position.distanceTo(c.position) < 5) {
+                    c.visible = false;
                     score++;
-                    document.getElementById('score').textContent = `Счёт: ${score}`;
+                    document.getElementById('score').textContent = 'Счёт: ' + score;
                 }
             });
 
