@@ -1,31 +1,177 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>3D Игра — Сбор кубов</title>
-    <link rel="stylesheet" href="style.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Расчёт зарплаты автослесаря</title>
+	<!-- Подключаем Google Fonts для красивого шрифта -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Roboto', Arial, sans-serif;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+		}
+
+		.container {
+			background: rgba(255, 255, 255, 0.95);
+			border-radius: 16px;
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+			padding: 40px;
+			width: 100%;
+			max-width: 550px;
+			backdrop-filter: blur(10px);
+		}
+
+		h1 {
+			text-align: center;
+			color: #333;
+			margin-bottom: 30px;
+			font-size: 28px;
+			font-weight: 700;
+		}
+
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 8px;
+			color: #444;
+			font-weight: 500;
+		}
+
+		input[type="number"] {
+			width: 100%;
+			padding: 12px 16px;
+			border: 2px solid #ddd;
+			border-radius: 10px;
+			font-size: 16px;
+			transition: all 0.3s ease;
+		}
+
+		input[type="number"]:focus {
+			outline: none;
+			border-color: #667eea;
+			box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+		}
+
+		.btn {
+			width: 100%;
+			padding: 14px;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			border: none;
+			border-radius: 10px;
+			font-size: 18px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: transform 0.2s ease, box-shadow 0.3s ease;
+			margin-top: 20px;
+		}
+
+		.btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+		}
+
+		.btn:active {
+			transform: translateY(0);
+		}
+
+		#result {
+			margin-top: 30px;
+			padding: 20px;
+			background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+			color: white;
+			border-radius: 12px;
+			text-align: center;
+			font-size: 24px;
+			font-weight: 700;
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.5s ease;
+		}
+
+		#result.show {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.info {
+			margin-top: 20px;
+			font-size: 14px;
+			color: #666;
+			text-align: center;
+		}
+
+		.card {
+			border-radius: 12px;
+			overflow: hidden;
+		}
+	</style>
 </head>
 <body>
-    <div id="startScreen">
-        <h1>3D Игра: Сбор кубов</h1>
-        <p>Нажмите кнопку, чтобы начать</p>
-        <button id="startBtn">СТАРТ</button>
-    </div>
+	<div class="container card">
+		<h1>Расчёт зарплаты автослесаря</h1>
+		
+		<form id="salaryForm">
+			<div class="form-group">
+				<label for="paidHours">Часы платных услуг (× 550 ₽)</label>
+				<input type="number" id="paidHours" min="0" step="0.5" placeholder="0" required>
+			</div>
 
-    <div id="errorScreen">
-        <h2>Ошибка WebGL</h2>
-        <p>Не удалось запустить 3D. Перезагрузите страницу.</p>
-        <button onclick="location.reload()">Перезагрузить</button>
-    </div>
+			<div class="form-group">
+				<label for="freeHours">Часы бесплатных замен (× 320 ₽)</label>
+				<input type="number" id="freeHours" min="0" step="0.5" placeholder="0" required>
+			</div>
 
-    <div id="score">Счёт: 0</div>
+			<div class="form-group">
+				<label for="extraShifts">Дополнительные смены (× 1500 ₽)</label>
+				<input type="number" id="extraShifts" min="0" step="1" value="0" required>
+			</div>
 
-    <div id="moveJoy" class="joystick"><div id="moveKnob" class="knob"></div></div>
-    <div id="lookJoy" class="joystick"><div id="lookKnob" class="knob"></div></div>
-    <div id="jumpBtn">↑ ПРЫЖОК</div>
+			<button type="button" class="btn" onclick="calculateSalary()">Рассчитать зарплату</button>
+		</form>
 
-    <script src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"></script>
-    <script src="script.js"></script>
+		<div id="result"></div>
+
+		<div class="info">
+			Оклад 20 000 ₽ + оплата по часам + доп. смены
+		</div>
+	</div>
+
+	<script>
+		function calculateSalary() {
+			const paidHours = parseFloat(document.getElementById('paidHours').value) || 0;
+			const freeHours = parseFloat(document.getElementById('freeHours').value) || 0;
+			const extraShifts = parseFloat(document.getElementById('extraShifts').value) || 0;
+
+			const paidAmount = paidHours * 550;
+			const freeAmount = freeHours * 320;
+			const extraAmount = extraShifts * 1500;
+			const baseSalary = 20000;
+
+			const totalSalary = paidAmount + freeAmount + extraAmount + baseSalary;
+
+			const resultDiv = document.getElementById('result');
+			resultDiv.innerHTML = `
+				<div>Итоговая зарплата</div>
+				<div style="font-size: 32px; margin-top: 10px;">${totalSalary.toLocaleString('ru-RU')} ₽</div>
+			`;
+			resultDiv.classList.add('show');
+		}
+	</script>
 </body>
 </html>
