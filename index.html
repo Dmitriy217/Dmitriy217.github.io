@@ -1,177 +1,222 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Расчёт зарплаты автослесаря</title>
-	<!-- Подключаем Google Fonts для красивого шрифта -->
-	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расчёт зарплаты на СТО</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-		body {
-			font-family: 'Roboto', Arial, sans-serif;
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			min-height: 100vh;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: 20px;
-		}
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-		.container {
-			background: rgba(255, 255, 255, 0.95);
-			border-radius: 16px;
-			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-			padding: 40px;
-			width: 100%;
-			max-width: 550px;
-			backdrop-filter: blur(10px);
-		}
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 650px;
+            backdrop-filter: blur(10px);
+        }
 
-		h1 {
-			text-align: center;
-			color: #333;
-			margin-bottom: 30px;
-			font-size: 28px;
-			font-weight: 700;
-		}
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 32px;
+            font-weight: 700;
+        }
 
-		.form-group {
-			margin-bottom: 20px;
-		}
+        .calculator {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
 
-		label {
-			display: block;
-			margin-bottom: 8px;
-			color: #444;
-			font-weight: 500;
-		}
+        .calculator-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-		input[type="number"] {
-			width: 100%;
-			padding: 12px 16px;
-			border: 2px solid #ddd;
-			border-radius: 10px;
-			font-size: 16px;
-			transition: all 0.3s ease;
-		}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-		input[type="number"]:focus {
-			outline: none;
-			border-color: #667eea;
-			box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-		}
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 500;
+        }
 
-		.btn {
-			width: 100%;
-			padding: 14px;
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			color: white;
-			border: none;
-			border-radius: 10px;
-			font-size: 18px;
-			font-weight: 600;
-			cursor: pointer;
-			transition: transform 0.2s ease, box-shadow 0.3s ease;
-			margin-top: 20px;
-		}
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
 
-		.btn:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-		}
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
 
-		.btn:active {
-			transform: translateY(0);
-		}
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
 
-		#result {
-			margin-top: 30px;
-			padding: 20px;
-			background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-			color: white;
-			border-radius: 12px;
-			text-align: center;
-			font-size: 24px;
-			font-weight: 700;
-			opacity: 0;
-			transform: translateY(20px);
-			transition: all 0.5s ease;
-		}
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
 
-		#result.show {
-			opacity: 1;
-			transform: translateY(0);
-		}
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
 
-		.info {
-			margin-top: 20px;
-			font-size: 14px;
-			color: #666;
-			text-align: center;
-		}
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-		.card {
-			border-radius: 12px;
-			overflow: hidden;
-		}
-	</style>
+        .info {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-	<div class="container card">
-		<h1>Расчёт зарплаты автослесаря</h1>
-		
-		<form id="salaryForm">
-			<div class="form-group">
-				<label for="paidHours">Часы платных услуг (× 550 ₽)</label>
-				<input type="number" id="paidHours" min="0" step="0.5" placeholder="0" required>
-			</div>
+    <div class="container">
+        <h1>Расчёт зарплаты на СТО</h1>
 
-			<div class="form-group">
-				<label for="freeHours">Часы бесплатных замен (× 320 ₽)</label>
-				<input type="number" id="freeHours" min="0" step="0.5" placeholder="0" required>
-			</div>
+        <!-- Калькулятор для автослесаря -->
+        <div class="calculator">
+            <div class="calculator-title">Автослесарь</div>
+            
+            <div class="form-group">
+                <label for="mechanicPaid">Часы платных услуг (× 550 ₽)</label>
+                <input type="number" id="mechanicPaid" min="0" step="0.5" placeholder="0">
+            </div>
 
-			<div class="form-group">
-				<label for="extraShifts">Дополнительные смены (× 1500 ₽)</label>
-				<input type="number" id="extraShifts" min="0" step="1" value="0" required>
-			</div>
+            <div class="form-group">
+                <label for="mechanicFree">Часы бесплатных замен (× 320 ₽)</label>
+                <input type="number" id="mechanicFree" min="0" step="0.5" placeholder="0">
+            </div>
 
-			<button type="button" class="btn" onclick="calculateSalary()">Рассчитать зарплату</button>
-		</form>
+            <div class="form-group">
+                <label for="mechanicExtra">Дополнительные смены (× 1500 ₽)</label>
+                <input type="number" id="mechanicExtra" min="0" step="1" value="0">
+            </div>
 
-		<div id="result"></div>
+            <button type="button" class="btn" onclick="calculateMechanic()">Рассчитать зарплату автослесаря</button>
+            
+            <div id="mechanicResult" class="result"></div>
+            
+            <div class="info">Оклад 20 000 ₽ + оплата по часам + доп. смены</div>
+        </div>
 
-		<div class="info">
-			Оклад 20 000 ₽ + оплата по часам + доп. смены
-		</div>
-	</div>
+        <!-- Калькулятор для мастера СТО -->
+        <div class="calculator">
+            <div class="calculator-title">Мастер СТО</div>
+            
+            <div class="form-group">
+                <label for="masterPaid">Часы платных услуг (× 160 ₽)</label>
+                <input type="number" id="masterPaid" min="0" step="0.5" placeholder="0">
+            </div>
 
-	<script>
-		function calculateSalary() {
-			const paidHours = parseFloat(document.getElementById('paidHours').value) || 0;
-			const freeHours = parseFloat(document.getElementById('freeHours').value) || 0;
-			const extraShifts = parseFloat(document.getElementById('extraShifts').value) || 0;
+            <div class="form-group">
+                <label for="masterFree">Часы бесплатных замен (× 80 ₽)</label>
+                <input type="number" id="masterFree" min="0" step="0.5" placeholder="0">
+            </div>
 
-			const paidAmount = paidHours * 550;
-			const freeAmount = freeHours * 320;
-			const extraAmount = extraShifts * 1500;
-			const baseSalary = 20000;
+            <button type="button" class="btn" onclick="calculateMaster()">Рассчитать зарплату мастера</button>
+            
+            <div id="masterResult" class="result"></div>
+            
+            <div class="info">Оклад 25 000 ₽ + оплата по часам</div>
+        </div>
+    </div>
 
-			const totalSalary = paidAmount + freeAmount + extraAmount + baseSalary;
+    <script>
+        function calculateMechanic() {
+            const paidHours = parseFloat(document.getElementById('mechanicPaid').value) || 0;
+            const freeHours = parseFloat(document.getElementById('mechanicFree').value) || 0;
+            const extraShifts = parseFloat(document.getElementById('mechanicExtra').value) || 0;
 
-			const resultDiv = document.getElementById('result');
-			resultDiv.innerHTML = `
-				<div>Итоговая зарплата</div>
-				<div style="font-size: 32px; margin-top: 10px;">${totalSalary.toLocaleString('ru-RU')} ₽</div>
-			`;
-			resultDiv.classList.add('show');
-		}
-	</script>
+            const paidAmount = paidHours * 550;
+            const freeAmount = freeHours * 320;
+            const extraAmount = extraShifts * 1500;
+            const baseSalary = 20000;
+
+            const total = paidAmount + freeAmount + extraAmount + baseSalary;
+
+            const resultDiv = document.getElementById('mechanicResult');
+            resultDiv.innerHTML = `
+                <div>Итоговая зарплата автослесаря</div>
+                <div style="font-size: 32px; margin-top: 10px;">${total.toLocaleString('ru-RU')} ₽</div>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        function calculateMaster() {
+            const paidHours = parseFloat(document.getElementById('masterPaid').value) || 0;
+            const freeHours = parseFloat(document.getElementById('masterFree').value) || 0;
+
+            const paidAmount = paidHours * 160;
+            const freeAmount = freeHours * 80;
+            const baseSalary = 25000;
+
+            const total = paidAmount + freeAmount + baseSalary;
+
+            const resultDiv = document.getElementById('masterResult');
+            resultDiv.innerHTML = `
+                <div>Итоговая зарплата мастера СТО</div>
+                <div style="font-size: 32px; margin-top: 10px;">${total.toLocaleString('ru-RU')} ₽</div>
+            `;
+            resultDiv.classList.add('show');
+        }
+    </script>
 </body>
 </html>
